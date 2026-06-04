@@ -1,0 +1,173 @@
+import { useState } from "react";
+
+const PAGES = [
+  { title: "Your Smile 🌹", bg: "#fff0f6", accent: "#e0527a", border: "#ff6eb4", note: "Your smile is genuinely one of the most beautiful things in the world. When you smile, everything around you gets a little brighter — like sunshine found its favourite place to land. Never stop smiling. 🌸", q: "What does her smile do to the world? ✨", opts: ["Makes people nervous 😬","Makes everything brighter ☀️","Nothing special 🤷","Blinds people 😎"], ans: 1, fb: "It makes everything brighter! 🌟" },
+  { title: "Your Laugh 🎶", bg: "#f5f0ff", accent: "#8b5cf6", border: "#c084fc", note: "Your laugh is literally the best sound in the universe. Scientists haven't confirmed this yet, but only because they haven't heard it. It's contagious, warm, and impossible not to love. 💜", q: "If her laugh were a song, what genre? 🎵", opts: ["Heavy metal 🤘","Sad blues 😢","Happy pop 🎉","Elevator music 🛗"], ans: 2, fb: "Pop — catchy and impossible to get out of your head! 🎉" },
+  { title: "Your Heart 💚", bg: "#f0fdf9", accent: "#059669", border: "#34d399", note: "You have one of the biggest, warmest hearts ever known. You care deeply, feel everything fully, and love with your whole soul. The world is genuinely luckier because you're in it. 🍀", q: "What is the size of her heart? 💚", opts: ["Average size 📏","Kinda small 🤏","Medium I guess 🤔","ENORMOUS 💚✨"], ans: 3, fb: "ENORMOUS — big enough for everyone she loves! 💚" },
+  { title: "Your Mind 💙", bg: "#eff6ff", accent: "#2563eb", border: "#60a5fa", note: "Your mind is a fascinating place — curious, clever, and always surprising. You think in ways that catch people off guard in the best way. Never underestimate how brilliant you actually are. 🧠✨", q: "When she solves a problem she feels like… 🧩", opts: ["Confused and lost 😵","A brilliant detective 🔍","Meh it was easy 😑","Stressed 😰"], ans: 1, fb: "A genius detective who just cracked the case! 🔍✨" },
+  { title: "Your Strength 🧡", bg: "#fff7ed", accent: "#d97706", border: "#fb923c", note: "You are so much stronger than you realize. Every hard day you've pushed through took real courage. You didn't just survive those moments — you grew from them. 🌱", q: "When life gets hard, she… 🌊", opts: ["Gives up immediately 🏳️","Panics forever 😱","Finds strength & pushes through 💪","Hides under a blanket 🙈"], ans: 2, fb: "Finds her strength and pushes through like the warrior she is! 🔥" },
+  { title: "Your Energy ☀️", bg: "#fffbeb", accent: "#b45309", border: "#fbbf24", note: "Your energy is like sunshine — warm, vibrant, and absolutely impossible to ignore. When you walk into a room, the whole atmosphere shifts. You are a walking ray of sunshine and people feel it. 🌻", q: "Her energy in a room is like… ⚡", opts: ["Sunshine breaking through clouds ☀️","A rainy Monday 🌧️","Background noise 📻","A storm ⛈️"], ans: 0, fb: "Sunshine breaking through clouds — pure warmth and light! ☀️" },
+  { title: "Your Kindness ❤️", bg: "#fff1f2", accent: "#e11d48", border: "#fb7185", note: "You are one of the kindest souls imaginable. The little things you do, the small gestures, the thoughtful words — they matter more than you know. Kindness like yours changes people. 🌷", q: "What's the secret ingredient in her kindness? 🍯", opts: ["Chocolate 🍫","Magic spells 🪄","Pure genuine love ❤️","Good WiFi 📶"], ans: 2, fb: "Pure genuine love — it comes straight from her heart! ❤️" },
+  { title: "Your Style 🎀", bg: "#fdf4ff", accent: "#9333ea", border: "#d946ef", note: "You have this effortlessly beautiful style that's completely uniquely yours. Whether dressed up or down, you carry yourself with a natural grace that's honestly hard to explain — you just have it. 💅", q: "Her fashion style could be described as… 👗", opts: ["Accidentally backward 🙃","Effortlessly chic 👑","Always mismatched 🧦","Always in pajamas 🛌"], ans: 1, fb: "Effortlessly chic — she makes everything look made for her! 👑" },
+  { title: "Your Hugs 🤗", bg: "#fdf2f8", accent: "#be185d", border: "#f472b6", note: "Your hugs feel like the safest place in the world. Like nothing bad can reach you there. Like time slows down for a second and everything is okay. One of your hugs is worth a thousand words. 🫂", q: "What does one of her hugs feel like? 🫂", opts: ["An awkward handshake 🤝","A gentle high five 🖐️","A formal nod 🎩","The safest place in the universe 🌍💛"], ans: 3, fb: "The safest warmest place in the entire universe! 🌍💛" },
+  { title: "Halfway There! 🎉", bg: "#f5f3ff", accent: "#7c3aed", border: "#a78bfa", note: "You've made it to page 10! 🎊 Just a quick reminder: you are doing so well in life, in love, in everything. You should be incredibly proud of yourself. You really should. 💜", q: "She's reached page 10! How does she feel? 🎊", opts: ["Bored already 😴","Wants to stop 🛑","Confused 😕","Amazing & ready for more! 🚀"], ans: 3, fb: "Absolutely amazing and ready for more! 🚀💜" },
+  { title: "Your Dreams 🌙", bg: "#ecfdf5", accent: "#047857", border: "#6ee7b7", note: "Every dream you have is worth chasing. Every single one. Don't let anyone tell you otherwise — especially not the voice inside your own head. Your dreams are valid, real, and absolutely within reach. 🌠", q: "Her dreams are… 🌠", opts: ["Probably impossible 🙅","Kind of silly 😄","100% worth chasing 🌟","Too big 📏"], ans: 2, fb: "100% worth chasing — and she has everything it takes! 🌟" },
+  { title: "Your Voice 💙", bg: "#eff6ff", accent: "#1d4ed8", border: "#93c5fd", note: "The way you speak — thoughtfully, warmly, and always with meaning — is a gift. Your voice deserves to be heard. Speak up, share your thoughts, use your voice. The world needs to hear what you have to say. 🗣️💙", q: "When she speaks, people… 🎤", opts: ["Zone out 😶","Lean in closer 👂","Check their phones 📱","Fall asleep 😴"], ans: 1, fb: "Lean in closer — they never want to miss a word! 👂✨" },
+  { title: "Your Creativity 🎨", bg: "#fff7ed", accent: "#c2410c", border: "#fdba74", note: "There's a beautifully creative soul inside you. The way you see things, imagine things, feel things — it's artistic even when you don't realize it. The world you see is richer and more colorful than most people's. 🎨🌈", q: "If she were a color, she'd be… 🎨", opts: ["Beige 🟫","Plain grey ⬜","Basic white","An entire sunset 🌅"], ans: 3, fb: "A whole sunset — every color, warm and breathtaking! 🌅" },
+  { title: "Your Patience 🌻", bg: "#fefce8", accent: "#92400e", border: "#fcd34d", note: "Your patience is something to admire. In a world that rushes everything, you take your time. You listen. You wait. You give things and people the space to grow. That's a rare and precious quality. 🌻", q: "Her level of patience can be compared to… 🌿", opts: ["A 5-second timer ⏱️","A traffic light 🚦","A wise ancient tree 🌳","A microwave ding 📳"], ans: 2, fb: "A wise ancient tree — deep-rooted and unshakeable! 🌳" },
+  { title: "Your Uniqueness 🦋", bg: "#fff1f2", accent: "#9f1239", border: "#fda4af", note: "There is genuinely no one in this world like you. Not one. Your combination of personality, humor, heart, and soul is completely original. You are a limited edition — and the world knows it. 🦋💖", q: "How many people in the world are exactly like her? 🌍", opts: ["Millions 🌊","A few thousand 🏙️","Maybe 5 🖐️","Zero — she's one of a kind 👑"], ans: 3, fb: "Zero. Absolutely zero. She is one of a kind! 🦋👑" },
+  { title: "Your Presence 🌸", bg: "#fdf4ff", accent: "#db2777", border: "#f9a8d4", note: "Simply having you around makes everything feel more alive. Your presence isn't just noticed — it's felt. People gravitate towards you naturally without even knowing why. You are magnetic. 🧲✨", q: "When she enters a room, the vibe… 💫", opts: ["Instantly upgrades 🌸","Stays the same 😐","Gets worse somehow 😅","Nobody notices 🙈"], ans: 0, fb: "Instantly upgrades — she makes every room 10x better! 🌸✨" },
+  { title: "Your Worth 💎", bg: "#fff0f6", accent: "#be123c", border: "#fb7185", note: "You are worth so much more than you sometimes believe. Your value isn't tied to productivity or what others think. You are inherently, unconditionally worthy of love and happiness. 💎", q: "What is her value, honestly? 💎", opts: ["Could be higher 📈","Depends on the day 🤔","Average 😶","Priceless 💎"], ans: 3, fb: "Priceless — she is beyond any measurement! 💎👑" },
+  { title: "Your Future 🔮", bg: "#f5f3ff", accent: "#6d28d9", border: "#c4b5fd", note: "Your future is so bright it needs its own sunglasses. Everything you're working towards, everything you're hoping for — it's coming. Good things are building slowly for you. Trust the process. Trust yourself. 🔮", q: "What does her future look like? 🌅", opts: ["Cloudy and uncertain ⛅","Blindingly bright ✨😎","Kind of foggy 🌫️","Rainy season 🌧️"], ans: 1, fb: "So bright she needs sunglasses just to look at it! 😎✨" },
+  { title: "You Are Loved 💚", bg: "#f0fdf4", accent: "#065f46", border: "#34d399", note: "This might be the most important page: you are loved. Not because of what you do or how you look — just because of who you are. Exactly as you are, right now, today. That love is real and it's not going anywhere. 💚🫂", q: "Is she loved? 💚", opts: ["Maybe a little 🤏","It's complicated 😅","Not sure 🤔","YES absolutely 💚"], ans: 3, fb: "YES! More than words could ever fully express! 💚💚💚" },
+  { title: "Just You 🌟", bg: "#fdf4ff", accent: "#ff6eb4", border: "#ff6eb4", note: "The last note, and the most honest: out of all the things worth celebrating in this world, you are one of my favorites. Not for any one reason — just for all of you. Every single part. Thank you for existing. 🌟💖", q: "Final question — how incredible is she? 🌟", opts: ["7/10 with rice 🍚","A solid 8 😌","Pretty good tbh 🙂","OFF THE CHARTS 🌟👑"], ans: 3, fb: "OFF THE CHARTS! Beyond 10/10! She is everything! 🌟👑💖" },
+];
+
+export default function App() {
+  const [screen, setScreen] = useState("cover"); // cover | quiz | result
+  const [page, setPage] = useState(0);
+  const [selected, setSelected] = useState(Array(20).fill(null));
+
+  const score = selected.filter((s, i) => s === PAGES[i].ans).length;
+  const cur = PAGES[page];
+  const answered = selected[page] !== null;
+
+  function pick(i) {
+    if (answered) return;
+    const next = [...selected];
+    next[page] = i;
+    setSelected(next);
+  }
+
+  function stars() {
+    if (score >= 18) return "⭐⭐⭐⭐⭐";
+    if (score >= 14) return "⭐⭐⭐⭐";
+    if (score >= 10) return "⭐⭐⭐";
+    return "⭐⭐";
+  }
+
+  function resultMsg() {
+    if (score >= 18) return "Perfect! Obviously — every answer was about how incredible you are. 🌟";
+    if (score >= 14) return "Amazing! You know yourself well, beautiful. Keep being exactly this. 💖";
+    if (score >= 10) return "Lovely! A few surprises, but the message is clear: you're wonderful. 🌸";
+    return "Even without all the right answers, nothing changes how amazing you are. 💕";
+  }
+
+  // ── COVER ──
+  if (screen === "cover") return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(145deg,#fff0f8,#f3e8ff,#e8f4ff)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", textAlign:"center", padding:"40px 20px" }}>
+      <div style={{ fontSize:"4rem", marginBottom:8 }}>🌸</div>
+      <div style={{ display:"inline-block", background:"linear-gradient(90deg,#ff6eb4,#c084fc)", color:"white", fontSize:".75rem", fontWeight:800, letterSpacing:".14em", textTransform:"uppercase", padding:"6px 18px", borderRadius:100, marginBottom:20 }}>
+        ✨ A little world made just for you
+      </div>
+      <h1 style={{ fontSize:"clamp(2.5rem,10vw,5rem)", fontWeight:900, background:"linear-gradient(135deg,#ff6eb4,#c084fc,#60a5fa)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text", marginBottom:14, lineHeight:1.1 }}>
+        Hey Beautiful!
+      </h1>
+      <p style={{ fontSize:"1.1rem", color:"#a070a0", fontWeight:600, maxWidth:400, lineHeight:1.7, margin:"0 auto 32px" }}>
+        20 pages of cute quizzes, sweet notes, and lots of love — all for you 💖
+      </p>
+      <button onClick={() => setScreen("quiz")} style={{ background:"linear-gradient(135deg,#ff6eb4,#c084fc)", color:"white", border:"none", borderRadius:100, padding:"15px 44px", fontSize:"1.1rem", fontWeight:800, cursor:"pointer", boxShadow:"0 8px 28px rgba(255,110,180,.4)" }}>
+        Open your gift 🎀
+      </button>
+    </div>
+  );
+
+  // ── RESULT ──
+  if (screen === "result") return (
+    <div style={{ minHeight:"100vh", background:"linear-gradient(145deg,#fff0f8,#f3e8ff,#e8f4ff)", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", textAlign:"center", padding:"40px 20px" }}>
+      <div style={{ fontSize:"4rem", marginBottom:8 }}>🎉</div>
+      <h2 style={{ fontSize:"clamp(1.8rem,6vw,3rem)", fontWeight:900, color:"#e0527a", marginBottom:8 }}>You Did It!</h2>
+      <div style={{ fontSize:"2rem", letterSpacing:4, margin:"8px 0" }}>{stars()}</div>
+      <p style={{ fontSize:"1.3rem", fontWeight:800, color:"#e0527a", margin:"4px 0 8px" }}>Score: {score} / 20 💖</p>
+      <p style={{ fontSize:"1rem", color:"#9070a0", lineHeight:1.8, maxWidth:460, margin:"0 auto 24px" }}>{resultMsg()}</p>
+      <div style={{ background:"white", borderRadius:24, padding:"28px 32px", boxShadow:"0 6px 30px rgba(200,100,180,.12)", maxWidth:480, width:"100%", borderLeft:"5px solid #ff6eb4", marginBottom:28, textAlign:"left" }}>
+        <p style={{ fontWeight:600, fontSize:"1rem", color:"#7a5a70", lineHeight:2 }}>
+          "You finished 20 pages of love — and every single page was written with one thought in mind: <strong style={{ color:"#ff6eb4" }}>making you smile.</strong><br/><br/>I hope it worked. 💖"
+        </p>
+      </div>
+      <button onClick={() => { setScreen("cover"); setPage(0); setSelected(Array(20).fill(null)); }} style={{ background:"linear-gradient(135deg,#ff6eb4,#c084fc)", color:"white", border:"none", borderRadius:100, padding:"13px 34px", fontSize:"1rem", fontWeight:800, cursor:"pointer", boxShadow:"0 6px 20px rgba(255,110,180,.35)" }}>
+        Start over 🔄
+      </button>
+    </div>
+  );
+
+  // ── QUIZ PAGE ──
+  return (
+    <div style={{ minHeight:"100vh", background: cur.bg, display:"flex", flexDirection:"column" }}>
+
+      {/* Progress bar */}
+      <div style={{ height:5, background:"#eee" }}>
+        <div style={{ height:"100%", width:`${((page+1)/20)*100}%`, background:"linear-gradient(90deg,#ff6eb4,#c084fc,#60a5fa)", transition:"width .4s ease" }} />
+      </div>
+
+      {/* Top bar */}
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 18px" }}>
+        <span style={{ fontSize:".8rem", fontWeight:800, color:"#a060b0", background:"rgba(255,255,255,.8)", borderRadius:100, padding:"4px 12px" }}>
+          Page {page+1} / 20
+        </span>
+        <span style={{ fontSize:".8rem", fontWeight:800, color:"#a060b0", background:"rgba(255,255,255,.8)", borderRadius:100, padding:"4px 12px" }}>
+          ⭐ {score} pts
+        </span>
+      </div>
+
+      {/* Content */}
+      <div style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"8px 16px 16px", gap:18 }}>
+
+        <h2 style={{ fontWeight:900, fontSize:"clamp(1.4rem,5vw,2rem)", color: cur.accent, textAlign:"center" }}>{cur.title}</h2>
+
+        {/* Note */}
+        <div style={{ background:"white", borderRadius:22, padding:"22px 22px 20px", boxShadow:"0 4px 24px rgba(200,100,180,.1)", maxWidth:520, width:"100%", borderLeft:`5px solid ${cur.border}`, position:"relative" }}>
+          <div style={{ position:"absolute", top:-14, left:16, fontSize:"1.6rem" }}>💌</div>
+          <div style={{ fontSize:".7rem", fontWeight:800, textTransform:"uppercase", letterSpacing:".12em", color: cur.accent, marginBottom:6, marginTop:4 }}>A note for you</div>
+          <p style={{ fontSize:".95rem", color:"#7a5a70", lineHeight:1.8, fontWeight:500 }}>{cur.note}</p>
+        </div>
+
+        {/* Quiz */}
+        <div style={{ background:"white", borderRadius:22, padding:"22px", boxShadow:"0 4px 24px rgba(200,100,180,.1)", maxWidth:520, width:"100%" }}>
+          <p style={{ fontWeight:800, fontSize:"1rem", color:"#5a3a6a", marginBottom:14, lineHeight:1.4 }}>{cur.q}</p>
+          {cur.opts.map((opt, i) => {
+            let bg = "#fdf4ff", border = "2px solid #ecd4f7", color = "#6b4a80";
+            if (answered) {
+              if (i === cur.ans) { bg="#ecfdf5"; border="2px solid #34d399"; color="#065f46"; }
+              else if (i === selected[page]) { bg="#fff1f2"; border="2px solid #fb7185"; color="#9f1239"; }
+            }
+            return (
+              <button key={i} onClick={() => pick(i)} disabled={answered} style={{
+                display:"block", width:"100%", textAlign:"left",
+                background: bg, border, borderRadius:13, padding:"12px 16px",
+                fontSize:".92rem", fontWeight:700, color, cursor: answered ? "default" : "pointer",
+                marginBottom:9, fontFamily:"inherit",
+                transition:"transform .15s, border-color .2s",
+              }}>{opt}</button>
+            );
+          })}
+          {answered && (
+            <div style={{
+              marginTop:4, padding:"12px 16px", borderRadius:13, fontWeight:700, fontSize:".9rem", textAlign:"center",
+              background: selected[page] === cur.ans ? "#ecfdf5" : "#fff1f2",
+              color: selected[page] === cur.ans ? "#065f46" : "#9f1239",
+            }}>
+              {selected[page] === cur.ans ? "🎉 " : "💡 "}{cur.fb}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Nav */}
+      <div style={{ display:"flex", justifyContent:"center", gap:12, padding:"12px 20px 28px" }}>
+        {page > 0 && (
+          <button onClick={() => setPage(p => p-1)} style={{ background:"white", color:"#ff6eb4", border:"2px solid #ffd6ec", borderRadius:100, padding:"11px 24px", fontSize:".95rem", fontWeight:800, cursor:"pointer", fontFamily:"inherit" }}>
+            ← Back
+          </button>
+        )}
+        <button
+          onClick={() => page < 19 ? setPage(p => p+1) : setScreen("result")}
+          style={{ background:"linear-gradient(135deg,#ff6eb4,#c084fc)", color:"white", border:"none", borderRadius:100, padding:"12px 28px", fontSize:".95rem", fontWeight:800, cursor:"pointer", boxShadow:"0 5px 18px rgba(255,110,180,.35)", fontFamily:"inherit" }}
+        >
+          {page < 19 ? "Next page →" : "See results 🎊"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
